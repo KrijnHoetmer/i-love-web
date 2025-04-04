@@ -1,0 +1,1 @@
+Was ik ook bij. Echt. Was op 7 maart. Iets met GSAP. Volgens mij moeten we studenten alleen meer richting CSS duwen. Maar sowieso vet! Groene sokken, je weet zelf.

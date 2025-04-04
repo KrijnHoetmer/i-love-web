@@ -1,0 +1,1 @@
+Ok, nieuw schooljaar, blijkbaar moet ik dingen bijhouden in een Learning Journal ofzo. Ga ik doen. Daily checkouts, superleuk!

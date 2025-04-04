@@ -2,6 +2,21 @@
 // Deze package is geïnstalleerd via `npm install`, en staat als 'dependency' in package.json
 import express from 'express'
 
+// Importeer de Liquid package (ook als dependency via npm geïnstalleerd)
+import { Liquid } from 'liquidjs';
+
+// Zodat we bestanden en mappen in kunnen lezen.. Cool!
+import { readdir, readFile } from 'node:fs/promises'
+
+// Markdown parsen, ook cool!
+import { marked } from 'marked'
+
+// Frontmatter uitlezen, nog cooler!
+import matter from 'gray-matter'
+
+// Lees alle bestandsnamen uit de content directory in
+const files = await readdir('content')
+
 // Maak een nieuwe Express applicatie aan, waarin we de server configureren
 const app = express()
 
@@ -9,7 +24,37 @@ const app = express()
 // Bestanden in deze map kunnen dus door de browser gebruikt worden
 app.use(express.static('public'))
 
+// Misschien handig voor als we forms gaan POSTen. Een gastenboek misschien?
 app.use(express.urlencoded({extended: true}))
+
+// Stel Liquid in als 'view engine'
+const engine = new Liquid();
+app.engine('liquid', engine.express()); 
+
+// Stel de map met Liquid templates in
+// Let op: de browser kan deze bestanden niet rechtstreeks laden (zoals voorheen met HTML bestanden)
+app.set('views', './views')
+
+app.get('/', async function(request, response) {
+  response.render('home.liquid')
+})
+app.get('/learning-journal', async function(req, res) {
+  res.render('journal.liquid', {files: files})
+})
+app.get('/learning-journal/:slug', async function(req, res) {
+  const fileContents = await readFile('content/' + req.params.slug + '.md', { encoding: 'utf8' })
+  const article = matter(fileContents)
+  const markedUpContent = marked.parse(article.content)
+
+  res.render('artikel.liquid', {fileContents: markedUpContent, metadata: article.data})
+})
+app.get('/over-mij', async function(req, res) {
+  res.render('over-mij.liquid')
+})
+app.get('/digital-garden', async function(req, res) {
+  res.render('garden.liquid')
+})
+
 
 // Stel het poortnummer in waar Express op moet gaan luisteren
 // Lokaal is dit poort 8000, als dit ergens gehost wordt, is het waarschijnlijk poort 80
